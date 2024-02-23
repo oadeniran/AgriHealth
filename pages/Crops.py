@@ -30,6 +30,7 @@ def clf(selection, model, labels):
         im = im.resize((64, 64))
         im = np.expand_dims(np.array(im), 0)
         res = model.predict(im)
+        print(res)
         pred = np.argmax(res)
         st.success("Prediction complete")
         st.header(f"The prediction by the model is {labels[int(pred)]}")

@@ -56,8 +56,6 @@ if selection == "Poultry":
     home()
     sub_sel = st.sidebar.radio("Select Option", ["---", "Classify Image", "Realtime Classification"])
     if sub_sel == "Classify Image":
-        home()
-    elif sub_sel == "Classify Image":
         clf()
     elif sub_sel == "Realtime Classification":
         real_time()
