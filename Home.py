@@ -2,11 +2,13 @@ import streamlit as st
 import tensorflow as tf
 
 if __name__ == "__main__":
-    if "corn_model" not in st.session_state:
-        corn_model = tf.keras.models.load_model('corn_model.hdf5')
-        poultry_model = model = tf.keras.models.load_model('poultry_model.hdf5')
-        st.session_state["corn_model"] = corn_model
-        st.session_state["poultry_model"] = poultry_model
+    if "Corn_model" not in st.session_state:
+        corn_model = tf.keras.models.load_model('model_files/corn_model.hdf5')
+        poultry_model = tf.keras.models.load_model('model_files/poultry_model.hdf5')
+        maize_model = tf.keras.models.load_model('model_files/poultry_model.hdf5')
+        st.session_state["Corn_model"] = corn_model
+        st.session_state["Poultry_model"] = poultry_model
+        st.session_state["Maize_model"] = maize_model
 
     st.title("AgriHealth Watch")
 

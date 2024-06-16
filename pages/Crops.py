@@ -2,17 +2,33 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import numpy as np
+from model import generate_prompt, get_response, load_model
 
-corn_labels = {0: 'Corn__Cercospora_Leaf_Spot',
+datasets_link = {
+    'Corn': 'https://www.kaggle.com/datasets/responsibleailab/crop-disease-ghana',
+    'Maize' : 'https://www.kaggle.com/datasets/gauravduttakiit/makerere-fall-armyworm-crop-challenge'
+}
+
+all_labels = {
+    'Corn' : {0: 'Corn__Cercospora_Leaf_Spot',
  1: 'Corn__Common_Rust',
  2: 'Corn__Healthy',
  3: 'Corn__Northern_Leaf_Blight',
- 4: 'Corn__Streak'}
+ 4: 'Corn__Streak'}, 
+
+ "Maize" : {
+    0: "Not affected by Armyworm",
+    1: "Affected by Armyworm"
+}
+}
+
+if 'client' not in st.session_state:
+    st.session_state['client'] = load_model()
 
 def home(selection):
     st.header(f"A demo of using AI to predict if {selection} plant is diseased based on leave image")
 
-    st.subheader("The data used was gotten from - https://www.kaggle.com/datasets/responsibleailab/crop-disease-ghana")
+    st.subheader(f"The data used was gotten from - {datasets_link[selection]}")
 
     st.subheader("This serves as a proof of concept and will require additional training and data for a more efficient model")
 
@@ -20,20 +36,29 @@ def home(selection):
 
 def clf(selection, model, labels):
     img_f = st.file_uploader(f"{selection}-image", type=["png", "jpg"])
+
     if img_f is not None:
         with open(img_f.name, mode='wb') as f:
-            f.write(img_f.getbuffer()) # save pdf to disk
+            f.write(img_f.getbuffer()) # save png to disk
         st.success("Image Uploaded.....")
         st.image(img_f.name, caption="Uploaded image", width=200)
         st.info(f"Predicting if {selection} is diseased or not")
         im = Image.open(img_f.name)
         im = im.resize((64, 64))
         im = np.expand_dims(np.array(im), 0)
-        res = model.predict(im)
-        print(res)
-        pred = np.argmax(res)
+
+        if selection == 'Corn':
+            res = model.predict(im)
+            print(res)
+            pred = np.argmax(res)
+        else:
+            res = round(model.predict(im)[0][0])
+            pred = res
+        
         st.success("Prediction complete")
         st.header(f"The prediction by the model is {labels[int(pred)]}")
+        return labels[int(pred)]
+        
 
 def real_time(selection, model, labels):
     cam_input = st.camera_input(label="Camera")
@@ -49,22 +74,32 @@ def real_time(selection, model, labels):
         pred = np.argmax(res)
         st.success("Prediction complete")
         st.header(f"The prediction by the model is {labels[int(pred)]}")
+        return labels[int(pred)]
 
 def run_selection(selection):
     if selection == "More-coming-soon":
         st.info("MORE CROPS COMING SOON ......")
-    elif selection != 'Corn' and selection != "More-coming-soon":
+    elif selection not in ['Corn', "Maize"] and selection != "More-coming-soon":
         st.info("MODEL IN PROGRESS ......")
     else:
         home(selection)
         sub_sel = st.sidebar.radio("Select Option", ["---", "Classify Image", "Realtime Classification"])
         if sub_sel == "Classify Image":
-            clf(selection, st.session_state["corn_model"], corn_labels)
+            result = clf(selection, st.session_state[f"{selection}_model"], all_labels[selection])
+            if result != None:
+                prompt = generate_prompt(selection, result)
+                print(prompt)
+                response = get_response(st.session_state['client'], prompt)
+                st.write(response)
         elif sub_sel == "Realtime Classification":
-            real_time(selection, st.session_state["corn_model"], corn_labels)
+            result = real_time(selection, st.session_state[f"{selection}_model"],  all_labels[selection])
+            if result != None:
+                prompt = generate_prompt(selection, result)
+                response = get_response(st.session_state['client'], prompt)
+                st.write(response)
 
 st.title("Crop Diseases classifier")
 
 st.sidebar.title("Selecet Crop")
-selection = st.sidebar.radio("Go to", ["Corn", "Pepper", "Tomato", "More-coming-soon"])
+selection = st.sidebar.radio("Go to", ["Corn", "Maize", "Pepper", "Tomato", "More-coming-soon"])
 run_selection(selection)
