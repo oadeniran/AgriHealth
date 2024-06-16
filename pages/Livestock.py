@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 import numpy as np
+from model import load_model, generate_prompt, get_response
 
 labels = ['Healthy', 'Unhealthy']
 
@@ -27,9 +28,10 @@ def clf():
         im = Image.open(img_f.name)
         im = im.resize((64, 64))
         im = np.expand_dims(np.array(im), 0)
-        res = round(model.predict(im)[0][0])
+        res = round(st.session_state["Poultry_model"].predict(im)[0][0])
         st.success("Prediction complete")
         st.header(f"The prediction by the model is {labels[int(res)]}")
+        return labels[int(res)]
 
 def real_time():
     cam_input = st.camera_input(label="Camera")
@@ -41,13 +43,11 @@ def real_time():
         im = Image.open("cam_img.jpeg")
         im = im.resize((64, 64))
         im = np.expand_dims(np.array(im), 0)
-        res = round(model.predict(im)[0][0])
+        res = round(st.session_state["Poultry_model"].predict(im)[0][0])
         st.success("Prediction complete")
         st.header(f"The prediction by the model is {labels[int(res)]}")
+        return labels[int(res)]
 
-
-
-model = tf.keras.models.load_model('poultry_model.hdf5')
 st.title("Livestock Diseases classifier")
 
 st.sidebar.title("Selecet livestock")
@@ -56,9 +56,17 @@ if selection == "Poultry":
     home()
     sub_sel = st.sidebar.radio("Select Option", ["---", "Classify Image", "Realtime Classification"])
     if sub_sel == "Classify Image":
-        clf()
+        result = clf()
+        if result != None:
+                prompt = generate_prompt(selection, result)
+                response = get_response(st.session_state['client'], prompt)
+                st.write(response)
     elif sub_sel == "Realtime Classification":
-        real_time()
+        result = real_time()
+        if result != None:
+                    prompt = generate_prompt(selection, result)
+                    response = get_response(st.session_state['client'], prompt)
+                    st.write(response)
 
 else:
     st.info("MORE LIVESTOCKS COMING SOON ......")
