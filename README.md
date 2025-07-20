@@ -1,5 +1,5 @@
 # AgriHealth
-Test it out - https://agrihealth.streamlit.app
+Test it out - https://agrihealth.azurewebsites.net/
 ## Inspiration
 As a Nigerian, I've witnessed a significant rise in prices and inflation across all sectors, particularly affecting food prices. Food, being one of life's essentials, is experiencing soaring prices, contributing to increased hunger and poverty among families. This is directly at odds with Sustainable Development Goals 1 and 2, which aim to eradicate poverty and hunger, respectively.
 
@@ -22,5 +22,7 @@ We take pride in successfully deploying the model for public use in real-time. D
 # What's next for AgriHealth
 Looking ahead, there are several avenues for improving the AgriHealth project. Two key areas of focus include:
 
-Expansion of livestock and crop categories to broaden the tool's applicability.
-Integration of chatbots, such as OpenAI, to provide real-time feedback based on model predictions, enhancing user interaction and usability.
+- Expansion of livestock and crop categories to broaden the tool's applicability.
+- Integration of chatbots, such as OpenAI, to provide real-time feedback based on model predictions, enhancing user interaction and usability.- Done
+- Data Robustness for more accurate results
+

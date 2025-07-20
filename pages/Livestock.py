@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 import numpy as np
-from model import load_model, generate_prompt, get_response
+from model import generate_prompt, get_model_resp
 
 labels = ['Healthy', 'Unhealthy']
 
@@ -28,7 +28,9 @@ def clf():
         im = Image.open(img_f.name)
         im = im.resize((64, 64))
         im = np.expand_dims(np.array(im), 0)
-        res = round(st.session_state["Poultry_model"].predict(im)[0][0])
+        res_p = st.session_state["Poultry_model"].predict(im)[0][0]
+        print(res_p)
+        res = round(res_p)
         st.success("Prediction complete")
         st.header(f"The prediction by the model is {labels[int(res)]}")
         return labels[int(res)]
@@ -43,7 +45,9 @@ def real_time():
         im = Image.open("cam_img.jpeg")
         im = im.resize((64, 64))
         im = np.expand_dims(np.array(im), 0)
-        res = round(st.session_state["Poultry_model"].predict(im)[0][0])
+        res_p = st.session_state["Poultry_model"].predict(im)[0][0]
+        print(res_p)
+        res = round(res_p)
         st.success("Prediction complete")
         st.header(f"The prediction by the model is {labels[int(res)]}")
         return labels[int(res)]
@@ -59,14 +63,16 @@ if selection == "Poultry":
         result = clf()
         if result != None:
                 prompt = generate_prompt(selection, result)
-                response = get_response(st.session_state['client'], prompt)
+                print(prompt)
+                response = get_model_resp(prompt)
                 st.write(response)
     elif sub_sel == "Realtime Classification":
         result = real_time()
         if result != None:
-                    prompt = generate_prompt(selection, result)
-                    response = get_response(st.session_state['client'], prompt)
-                    st.write(response)
+                prompt = generate_prompt(selection, result)
+                print(prompt)
+                response = get_model_resp(prompt)
+                st.write(response)
 
 else:
     st.info("MORE LIVESTOCKS COMING SOON ......")

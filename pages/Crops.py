@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import numpy as np
-from model import generate_prompt, get_response, load_model
+from model import generate_prompt, get_model_resp
 
 datasets_link = {
     'Corn': 'https://www.kaggle.com/datasets/responsibleailab/crop-disease-ghana',
@@ -21,9 +21,6 @@ all_labels = {
     1: "Affected by Armyworm"
 }
 }
-
-if 'client' not in st.session_state:
-    st.session_state['client'] = load_model()
 
 def home(selection):
     st.header(f"A demo of using AI to predict if {selection} plant is diseased based on leave image")
@@ -89,14 +86,10 @@ def run_selection(selection):
             if result != None:
                 prompt = generate_prompt(selection, result)
                 print(prompt)
-                response = get_response(st.session_state['client'], prompt)
+                response = get_model_resp(prompt)
                 st.write(response)
         elif sub_sel == "Realtime Classification":
             result = real_time(selection, st.session_state[f"{selection}_model"],  all_labels[selection])
-            if result != None:
-                prompt = generate_prompt(selection, result)
-                response = get_response(st.session_state['client'], prompt)
-                st.write(response)
 
 st.title("Crop Diseases classifier")
 
