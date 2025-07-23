@@ -62,10 +62,11 @@ if selection == "Poultry":
     if sub_sel == "Classify Image":
         result = clf()
         if result != None:
-                prompt = generate_prompt(selection, result)
-                print(prompt)
-                response = get_model_resp(prompt)
-                st.write(response)
+                with st.spinner("Generating Analysis...."):
+                    prompt = generate_prompt(selection, result)
+                    print(prompt)
+                    response = get_model_resp(prompt)
+                    st.write(response)
     elif sub_sel == "Realtime Classification":
         result = real_time()
         if result != None:
