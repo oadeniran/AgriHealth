@@ -84,11 +84,11 @@ def run_selection(selection):
         if sub_sel == "Classify Image":
             result = clf(selection, st.session_state[f"{selection}_model"], all_labels[selection])
             if result != None:
-                st.spinner("Generating Analysis....")
-                prompt = generate_prompt(selection, result)
-                print(prompt)
-                response = get_model_resp(prompt)
-                st.write(response)
+                with st.spinner("Generating Analysis...."):
+                    prompt = generate_prompt(selection, result)
+                    print(prompt)
+                    response = get_model_resp(prompt)
+                    st.write(response)
         elif sub_sel == "Realtime Classification":
             result = real_time(selection, st.session_state[f"{selection}_model"],  all_labels[selection])
 
